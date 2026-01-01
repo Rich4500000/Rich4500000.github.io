@@ -268,39 +268,47 @@ function createTimelineItem(data, index) {
     return item;
 }
 
-// 4. 照片库初始化
+// 4. 媒体库初始化
 function initPhotoGallery() {
-    // 静态照片数据
-    const galleryPhotos = [
+    // 从localStorage加载媒体数据
+    const galleryMedia = JSON.parse(localStorage.getItem('galleryMedia')) || [
         {
             _id: '1',
-            imageUrl: 'https://via.placeholder.com/600x400?text=美好回忆1',
+            url: 'https://via.placeholder.com/600x400?text=美好回忆1',
             description: '我们的第一次约会',
-            loveCount: 10
+            loveCount: 10,
+            type: 'image',
+            createdAt: new Date().toISOString()
         },
         {
             _id: '2',
-            imageUrl: 'https://via.placeholder.com/600x400?text=美好回忆2',
+            url: 'https://via.placeholder.com/600x400?text=美好回忆2',
             description: '一起旅行',
-            loveCount: 15
+            loveCount: 15,
+            type: 'image',
+            createdAt: new Date().toISOString()
         },
         {
             _id: '3',
-            imageUrl: 'https://via.placeholder.com/600x400?text=美好回忆3',
+            url: 'https://via.placeholder.com/600x400?text=美好回忆3',
             description: '纪念日',
-            loveCount: 20
+            loveCount: 20,
+            type: 'image',
+            createdAt: new Date().toISOString()
         },
         {
             _id: '4',
-            imageUrl: 'https://via.placeholder.com/600x400?text=美好回忆4',
+            url: 'https://via.placeholder.com/600x400?text=美好回忆4',
             description: '冰岛',
-            loveCount: 25
+            loveCount: 25,
+            type: 'image',
+            createdAt: new Date().toISOString()
         }
     ];
     
     const photoGrid = document.getElementById('photoGrid');
     
-    if (galleryPhotos.length === 0) {
+    if (galleryMedia.length === 0) {
         photoGrid.innerHTML = `
             <div style="grid-column: 1 / -1; text-align: center; padding: 4rem; color: var(--gray);">
                 <p>还没有添加任何回忆</p>
@@ -309,30 +317,37 @@ function initPhotoGallery() {
         return;
     }
     
-    // 渲染照片卡片
+    // 渲染媒体卡片
     photoGrid.innerHTML = '';
-    galleryPhotos.forEach((photo, index) => {
-        const photoCard = createPhotoCard(photo, index);
-        photoGrid.appendChild(photoCard);
+    galleryMedia.forEach((media, index) => {
+        const mediaCard = createMediaCard(media, index);
+        photoGrid.appendChild(mediaCard);
     });
 }
 
-// 创建照片卡片
-function createPhotoCard(photo, index) {
+// 创建媒体卡片
+function createMediaCard(media, index) {
     const card = document.createElement('div');
     card.className = 'photo-card';
     card.style.animationDelay = `${index * 0.1}s`;
     
+    let mediaElement = '';
+    if (media.type === 'video') {
+        mediaElement = `<video src="${media.url}" alt="回忆" onclick="openMediaModal('${media.url}', '${media.description || '美好回忆'}', '${media._id}', ${media.loveCount || 0}, '${media.type}')" controls poster="${media.poster || ''}"></video>`;
+    } else {
+        mediaElement = `<img src="${media.url}" alt="回忆" onclick="openMediaModal('${media.url}', '${media.description || '美好回忆'}', '${media._id}', ${media.loveCount || 0}, '${media.type}')">`;
+    }
+    
     card.innerHTML = `
-        <img src="${photo.imageUrl}" alt="回忆" onclick="openPhotoModal('${photo.imageUrl}', '${photo.description || '美好回忆'}', '${photo._id}', ${photo.loveCount || 0})">
+        ${mediaElement}
         <div class="photo-info">
-            <p class="photo-desc">${photo.description || '美好回忆'}</p>
+            <p class="photo-desc">${media.description || '美好回忆'}</p>
             <div class="photo-actions">
-                <button class="love-btn" onclick="toggleLove('${photo._id}', this)">
+                <button class="love-btn" onclick="toggleLove('${media._id}', this)">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
                     </svg>
-                    <span class="love-count">${photo.loveCount || 0}</span>
+                    <span class="love-count">${media.loveCount || 0}</span>
                 </button>
             </div>
         </div>
@@ -341,15 +356,26 @@ function createPhotoCard(photo, index) {
     return card;
 }
 
-// 切换照片点赞
-function toggleLove(photoId, btn) {
-    // 静态点赞功能，只更新UI
+// 切换媒体点赞
+function toggleLove(mediaId, btn) {
+    // 更新UI
     const loveCountElement = btn.querySelector('.love-count');
     const currentCount = parseInt(loveCountElement.textContent) || 0;
-    
-    // 更新UI
     loveCountElement.textContent = currentCount + 1;
     btn.classList.add('loved');
+    
+    // 更新localStorage
+    const galleryMedia = JSON.parse(localStorage.getItem('galleryMedia')) || [];
+    const updatedMedia = galleryMedia.map(media => {
+        if (media._id === mediaId) {
+            return {
+                ...media,
+                loveCount: (media.loveCount || 0) + 1
+            };
+        }
+        return media;
+    });
+    localStorage.setItem('galleryMedia', JSON.stringify(updatedMedia));
     
     showToast('点赞成功', 'success');
 }
@@ -371,6 +397,43 @@ function initMessageBoard() {
             e.preventDefault();
             addMessage();
         }
+    });
+}
+
+// 6. 媒体上传功能
+function uploadMedia(file, description) {
+    return new Promise((resolve, reject) => {
+        // 创建FileReader读取文件
+        const reader = new FileReader();
+        
+        reader.onload = (e) => {
+            // 将文件数据转换为base64 URL
+            const base64Url = e.target.result;
+            
+            // 创建媒体对象
+            const newMedia = {
+                _id: Date.now().toString(),
+                url: base64Url,
+                description: description,
+                loveCount: 0,
+                type: file.type.startsWith('image/') ? 'image' : 'video',
+                createdAt: new Date().toISOString()
+            };
+            
+            // 保存到localStorage
+            const galleryMedia = JSON.parse(localStorage.getItem('galleryMedia')) || [];
+            galleryMedia.push(newMedia);
+            localStorage.setItem('galleryMedia', JSON.stringify(galleryMedia));
+            
+            resolve(newMedia);
+        };
+        
+        reader.onerror = (error) => {
+            reject(error);
+        };
+        
+        // 读取文件为base64
+        reader.readAsDataURL(file);
     });
 }
 
@@ -481,22 +544,28 @@ function createHeartParticle(x, y) {
 }
 
 // 7. 模态框功能
-function openPhotoModal(url, desc, photoId, loveCount) {
+function openMediaModal(url, desc, mediaId, loveCount, type) {
     const modal = document.getElementById('photoModal');
-    const modalPhoto = document.getElementById('modalPhoto');
-    const modalPhotoDesc = document.getElementById('modalPhotoDesc');
+    const modalContent = modal.querySelector('.modal-content');
     
-    modalPhoto.src = url;
-    modalPhotoDesc.textContent = desc;
+    // 更新模态框内容
+    if (type === 'video') {
+        modalContent.innerHTML = `
+            <span class="close" onclick="closeMediaModal()">&times;</span>
+            <video id="modalMedia" src="${url}" alt="回忆" controls style="max-width: 100%; max-height: 70vh;"></video>
+            <p id="modalMediaDesc">${desc}</p>
+        `;
+    } else {
+        modalContent.innerHTML = `
+            <span class="close" onclick="closeMediaModal()">&times;</span>
+            <img id="modalMedia" src="${url}" alt="回忆" style="max-width: 100%; max-height: 70vh;">
+            <p id="modalMediaDesc">${desc}</p>
+        `;
+    }
+    
     modal.style.display = 'block';
     
     // 添加点赞功能到模态框
-    const modalContent = modal.querySelector('.modal-content');
-    const existingLoveBtn = modalContent.querySelector('.modal-love-btn');
-    if (existingLoveBtn) {
-        existingLoveBtn.remove();
-    }
-    
     const loveBtn = document.createElement('button');
     loveBtn.className = 'modal-love-btn';
     loveBtn.innerHTML = `
@@ -505,28 +574,39 @@ function openPhotoModal(url, desc, photoId, loveCount) {
         </svg>
         <span>${loveCount || 0}</span>
     `;
-    loveBtn.onclick = () => toggleModalLove(photoId, loveBtn);
-    modalPhotoDesc.insertAdjacentElement('afterend', loveBtn);
+    loveBtn.onclick = () => toggleModalLove(mediaId, loveBtn);
+    modalContent.querySelector('#modalMediaDesc').insertAdjacentElement('afterend', loveBtn);
 }
 
 // 模态框点赞功能
-function toggleModalLove(photoId, btn) {
-    // 静态点赞功能，只更新UI
+function toggleModalLove(mediaId, btn) {
+    // 更新UI
     const loveCountElement = btn.querySelector('span');
     const currentCount = parseInt(loveCountElement.textContent) || 0;
-    
-    // 更新UI
     loveCountElement.textContent = currentCount + 1;
     btn.classList.add('loved');
+    
+    // 更新localStorage
+    const galleryMedia = JSON.parse(localStorage.getItem('galleryMedia')) || [];
+    const updatedMedia = galleryMedia.map(media => {
+        if (media._id === mediaId) {
+            return {
+                ...media,
+                loveCount: (media.loveCount || 0) + 1
+            };
+        }
+        return media;
+    });
+    localStorage.setItem('galleryMedia', JSON.stringify(updatedMedia));
     
     showToast('点赞成功', 'success');
 }
 
-function closePhotoModal() {
+function closeMediaModal() {
     document.getElementById('photoModal').style.display = 'none';
 }
 
-// 添加图片模态框功能
+// 添加媒体模态框功能
 function openAddPhotoModal() {
     document.getElementById('addPhotoModal').style.display = 'block';
 }
@@ -541,7 +621,7 @@ window.addEventListener('click', function(e) {
     const addPhotoModal = document.getElementById('addPhotoModal');
     
     if (e.target === photoModal) {
-        closePhotoModal();
+        closeMediaModal();
     }
     if (e.target === addPhotoModal) {
         closeAddPhotoModal();
@@ -555,7 +635,7 @@ window.addEventListener('keydown', function(e) {
     
     if (e.key === 'Escape') {
         if (photoModal.style.display === 'block') {
-            closePhotoModal();
+            closeMediaModal();
         }
         if (addPhotoModal.style.display === 'block') {
             closeAddPhotoModal();
@@ -563,20 +643,47 @@ window.addEventListener('keydown', function(e) {
     }
 });
 
-// 关闭添加图片模态框
+// 关闭添加媒体模态框
 const closeAddPhotoModalBtn = document.querySelector('#addPhotoModal .close');
 if (closeAddPhotoModalBtn) {
     closeAddPhotoModalBtn.addEventListener('click', closeAddPhotoModal);
 }
 
-// 处理添加图片表单提交
-const addPhotoForm = document.getElementById('addPhotoForm');
-if (addPhotoForm) {
-    addPhotoForm.addEventListener('submit', function(e) {
+// 处理添加媒体表单提交
+const addMediaForm = document.getElementById('addMediaForm');
+if (addMediaForm) {
+    addMediaForm.addEventListener('submit', async function(e) {
         e.preventDefault();
-        // 这里可以添加表单提交逻辑
-        showToast('图片添加功能正在开发中', 'success');
-        closeAddPhotoModal();
+        
+        const mediaFile = document.getElementById('mediaFile').files[0];
+        const mediaDesc = document.getElementById('mediaDesc').value.trim();
+        
+        if (!mediaFile) {
+            showToast('请选择要上传的媒体文件', 'error');
+            return;
+        }
+        
+        if (!mediaDesc) {
+            showToast('请填写描述', 'error');
+            return;
+        }
+        
+        try {
+            // 上传媒体文件
+            await uploadMedia(mediaFile, mediaDesc);
+            
+            // 重新渲染媒体库
+            initPhotoGallery();
+            
+            // 关闭模态框并清空表单
+            closeAddPhotoModal();
+            addMediaForm.reset();
+            
+            showToast('媒体上传成功！', 'success');
+        } catch (error) {
+            console.error('上传失败:', error);
+            showToast('上传失败，请稍后重试', 'error');
+        }
     });
 }
 

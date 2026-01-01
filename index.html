@@ -119,14 +119,14 @@
         <div class="modal-content">
             <span class="close" onclick="closeAddPhotoModal()">&times;</span>
             <h3>添加回忆</h3>
-            <form id="addPhotoForm">
+            <form id="addMediaForm">
                 <div class="form-group">
-                    <label for="photoFile">选择图片</label>
-                    <input type="file" id="photoFile" accept="image/*" required>
+                    <label for="mediaFile">选择图片或视频</label>
+                    <input type="file" id="mediaFile" accept="image/*,video/*,image/heic,image/heif" required>
                 </div>
                 <div class="form-group">
-                    <label for="photoDesc">描述/日期</label>
-                    <input type="text" id="photoDesc" placeholder="写下这段回忆..." required>
+                    <label for="mediaDesc">描述/日期</label>
+                    <input type="text" id="mediaDesc" placeholder="写下这段回忆..." required>
                 </div>
                 <button type="submit" class="submit-btn">保存</button>
             </form>
