@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>我们的小宇宙</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;600;700&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage.js"></script>
+</head>
+<body>
+    <!-- 导航栏 -->
+    <header class="navbar">
+        <div class="container">
+            <div class="logo">宝贝和轩轩</div>
+            <nav class="nav-links">
+                <a href="#hero" class="nav-link">首页</a>
+                <a href="#story" class="nav-link">我们的故事</a>
+                <a href="#gallery" class="nav-link">时光相册</a>
+                <a href="#messages" class="nav-link">留言板</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- 首页英雄区 -->
+    <section id="hero" class="hero">
+        <div class="hero-content">
+            <h1 class="hero-title">欢迎来到宝贝和轩轩的小宇宙</h1>
+            <p class="hero-subtitle">爱你是我做过最美好的事情</p>
+            <div class="heart-pulse"></div>
+            <a href="#story" class="scroll-down">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="12" y1="5" x2="12" y2="19"></line>
+                    <polyline points="19 12 12 19 5 12"></polyline>
+                </svg>
+            </a>
+        </div>
+    </section>
+
+    <!-- 我们的故事区 -->
+    <section id="story" class="story">
+        <div class="container">
+            <h2 class="section-title">我们的旅程</h2>
+            <div class="timeline">
+                <div class="timeline-item left">
+                    <div class="timeline-content">
+                        <h3 class="timeline-date">2023.05.20</h3>
+                        <h4 class="timeline-title">初次相遇</h4>
+                        <p class="timeline-desc">在那个阳光明媚的下午，我们相遇了，从此我的生命里多了一道光。</p>
+                    </div>
+                </div>
+                <div class="timeline-item right">
+                    <div class="timeline-content">
+                        <h3 class="timeline-date">2023.06.18</h3>
+                        <h4 class="timeline-title">第一次约会</h4>
+                        <p class="timeline-desc">我们一起去了海边，听着海浪声，感受着彼此的心跳。</p>
+                    </div>
+                </div>
+                <div class="timeline-item left">
+                    <div class="timeline-content">
+                        <h3 class="timeline-date">2023.08.14</h3>
+                        <h4 class="timeline-title">正式在一起</h4>
+                        <p class="timeline-desc">这一天，我们终于确定了关系，开始了属于我们的甜蜜旅程。</p>
+                    </div>
+                </div>
+                <div class="timeline-item right">
+                    <div class="timeline-content">
+                        <h3 class="timeline-date">2024.02.14</h3>
+                        <h4 class="timeline-title">第一个情人节</h4>
+                        <p class="timeline-desc">我们一起度过了第一个情人节，收到了彼此精心准备的礼物。</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 时光相册区 -->
+    <section id="gallery" class="gallery">
+        <div class="container">
+            <div class="gallery-header">
+                <h2 class="section-title">记忆的切片</h2>
+                <button class="add-photo-btn" onclick="openAddPhotoModal()">+ 添加我们的回忆</button>
+            </div>
+            <div class="photo-grid" id="photoGrid"></div>
+        </div>
+    </section>
+
+    <!-- 甜蜜留言板区 -->
+    <section id="messages" class="messages">
+        <div class="container">
+            <h2 class="section-title">对我宝贝说的话</h2>
+            <div class="message-board" id="messageBoard">
+                <!-- 留言将通过JS动态生成 -->
+            </div>
+            <div class="add-message">
+                <textarea id="messageInput" placeholder="写下你想对宝贝说的话..."></textarea>
+                <button class="send-message-btn" onclick="addMessage()">发送</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- 页脚 -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-text">爱是永恒的代码</div>
+                <div class="footer-heart"></div>
+                <div class="footer-copyright">© 2024 [你的名字]❤️[女朋友名字]. All Rights Reserved.</div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- 添加图片模态框 -->
+    <div id="addPhotoModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeAddPhotoModal()">&times;</span>
+            <h3>添加回忆</h3>
+            <form id="addPhotoForm">
+                <div class="form-group">
+                    <label for="photoFile">选择图片</label>
+                    <input type="file" id="photoFile" accept="image/*" required>
+                </div>
+                <div class="form-group">
+                    <label for="photoDesc">描述/日期</label>
+                    <input type="text" id="photoDesc" placeholder="写下这段回忆..." required>
+                </div>
+                <button type="submit" class="submit-btn">保存</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- 图片查看模态框 -->
+    <div id="photoModal" class="modal">
+        <div class="modal-content photo-modal-content">
+            <span class="close" onclick="closePhotoModal()">&times;</span>
+            <img id="modalPhoto" src="" alt="">
+            <p id="modalPhotoDesc"></p>
+        </div>
+    </div>
+
+    <!-- 跟随鼠标的爱心轨迹 -->
+    <div id="heartTrail"></div>
+
+    <script src="firebase-config.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
