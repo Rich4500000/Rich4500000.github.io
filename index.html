@@ -8,21 +8,19 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;600;700&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
-    <!-- Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage.js"></script>
+    <!-- 腾讯云开发 SDK - 暂时注释，本地开发不需要 -->
+    <!-- <script src="https://imgcache.qq.com/qcloud/cloudbase-js-sdk/1.9.0/cloudbase.full.js"></script> -->
 </head>
 <body>
     <!-- 导航栏 -->
     <header class="navbar">
         <div class="container">
-            <div class="logo">宝贝和轩轩</div>
+            <div class="logo">Rich和Mary</div>
             <nav class="nav-links">
                 <a href="#hero" class="nav-link">首页</a>
-                <a href="#story" class="nav-link">我们的故事</a>
-                <a href="#gallery" class="nav-link">时光相册</a>
-                <a href="#messages" class="nav-link">留言板</a>
+                <a href="#story" class="nav-link">故事</a>
+                <a href="#gallery" class="nav-link">相册</a>
+                <a href="#messages" class="nav-link">留言</a>
             </nav>
         </div>
     </header>
@@ -30,8 +28,8 @@
     <!-- 首页英雄区 -->
     <section id="hero" class="hero">
         <div class="hero-content">
-            <h1 class="hero-title">欢迎来到宝贝和轩轩的小宇宙</h1>
-            <p class="hero-subtitle">爱你是我做过最美好的事情</p>
+            <h1 class="hero-title">欢迎来到Rich和Mary的世界</h1>
+            <p class="hero-subtitle">时间会留下重要的人和事</p>
             <div class="heart-pulse"></div>
             <a href="#story" class="scroll-down">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -110,7 +108,8 @@
             <div class="footer-content">
                 <div class="footer-text">爱是永恒的代码</div>
                 <div class="footer-heart"></div>
-                <div class="footer-copyright">© 2024 [你的名字]❤️[女朋友名字]. All Rights Reserved.</div>
+
+                <div class="footer-copyright">© 2024 宝贝和轩轩. All Rights Reserved.</div>
             </div>
         </div>
     </footer>
@@ -146,7 +145,6 @@
     <!-- 跟随鼠标的爱心轨迹 -->
     <div id="heartTrail"></div>
 
-    <script src="firebase-config.js"></script>
     <script src="script.js"></script>
 </body>
 </html>
